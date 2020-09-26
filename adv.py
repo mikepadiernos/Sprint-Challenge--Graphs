@@ -29,11 +29,11 @@ player = Player(world.starting_room)
 traversal_path = []
 
 
-def traversal(player):
+def traversal(avatar):
     visited, backtrack, reversal = set(), [], {'s': 'n', 'n': 's', 'w': 'e', 'e': 'w'}
 
     while len(visited) < len(world.rooms):
-        current = player.current_room
+        current = avatar.current_room
 
         current_exits = current.get_exits()
         unexplored = [direction for direction in current_exits if current.get_room_in_direction(direction) not in visited]
@@ -42,13 +42,13 @@ def traversal(player):
 
         if unexplored:
             direction = unexplored[random.randint(0, len(unexplored) - 1)]
-            player.travel(direction)
+            avatar.travel(direction)
             backtrack.append(direction)
             traversal_path.append(direction)
 
         else:
             last_direction = backtrack.pop(-1)
-            player.travel(reversal[last_direction])
+            avatar.travel(reversal[last_direction])
             traversal_path.append(reversal[last_direction])
 
     return traversal_path
