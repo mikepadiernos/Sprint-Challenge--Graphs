@@ -8,7 +8,6 @@ from ast import literal_eval
 # Load world
 world = World()
 
-
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
@@ -17,7 +16,7 @@ world = World()
 map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
-room_graph=literal_eval(open(map_file, "r").read())
+room_graph = literal_eval(open(map_file, "r").read())
 world.load_graph(room_graph)
 
 # Print an ASCII map
@@ -30,6 +29,32 @@ player = Player(world.starting_room)
 traversal_path = []
 
 
+def traversal(player):
+    visited, backtrack, reversal = set(), [], {'s': 'n', 'n': 's', 'w': 'e', 'e': 'w'}
+
+    while len(visited) < len(world.rooms):
+        current = player.current_room
+
+        current_exits = current.get_exits()
+        unexplored = [direction for direction in current_exits if current.get_room_in_direction(direction) not in visited]
+
+        visited.add(current)
+
+        if unexplored:
+            direction = unexplored[random.randint(0, len(unexplored) - 1)]
+            player.travel(direction)
+            backtrack.append(direction)
+            traversal_path.append(direction)
+
+        else:
+            last_direction = backtrack.pop(-1)
+            player.travel(reversal[last_direction])
+            traversal_path.append(reversal[last_direction])
+
+    return traversal_path
+
+
+traversal(player)
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
@@ -45,8 +70,6 @@ if len(visited_rooms) == len(room_graph):
 else:
     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
     print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
-
-
 
 #######
 # UNCOMMENT TO WALK AROUND
